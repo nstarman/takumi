@@ -16,7 +16,7 @@ use takumi_core::{
   resources::{font::FontError, image::ImageSource},
   style::{Color, FontFamily, Lang, Length, SizingContext, StyleSheet, page_rule::PageSize},
   units::{ONE_IN_PX, ONE_MM_IN_PX, ONE_PT_IN_PX},
-  viewport::{MediaTarget, Viewport},
+  viewport::Viewport,
 };
 use typed_builder::TypedBuilder;
 
@@ -1038,7 +1038,7 @@ impl PageOptions {
 
   /// The page as the viewport an `@page` rule's `@media` and lengths resolve against.
   fn viewport(&self) -> Viewport {
-    Viewport::new((self.width as u32, self.height as u32)).with_media_target(MediaTarget::Print)
+    Viewport::print_page(self.size())
   }
 
   /// Approximate: `em` and `rem` resolve against 16px, where Blink's page style takes the root's.
