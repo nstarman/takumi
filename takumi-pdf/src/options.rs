@@ -1095,7 +1095,7 @@ mod tests {
   fn a_margin_percentage_takes_the_page_size_on_its_own_axis() {
     let stylesheet =
       StyleSheet::parse("@page { size: 600px 300px; margin: 10% 5% }").expect("parses");
-    let page = *PageOptions::A4.with_page_rules(&stylesheet).get(0);
+    let page = *PageOptions::A4.with_page_rules(&stylesheet).first();
 
     assert_eq!(
       page.margin.resolve(page.size(), None, None),
