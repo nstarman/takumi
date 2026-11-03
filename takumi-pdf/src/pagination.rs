@@ -11,6 +11,7 @@ use takumi_core::{
   },
   page_stream::{PageStream, Settle, Settled},
   scene::PageWindows,
+  style::PageName,
 };
 
 use crate::{
@@ -256,7 +257,7 @@ impl CountingPass {
     let repeated: Vec<_> = self
       .content
       .repeated
-      .get(0)
+      .first()
       .iter()
       .filter_map(Repeatable::source_orders)
       .map(|orders| orders.start.saturating_sub(1)..orders.end.saturating_sub(1))
@@ -282,6 +283,8 @@ pub(crate) struct Paginated {
 pub(crate) struct PageSlice {
   /// 0-based; display page numbers are `index + 1`.
   pub(crate) index: usize,
+  /// The named page the page is, which picks its frame.
+  pub(crate) name: PageName,
   pub(crate) start: f32,
   /// Where the next page begins.
   pub(crate) end: f32,
@@ -293,6 +296,7 @@ impl PageSlice {
 
     Self {
       index,
+      name: sizes.name(index).clone(),
       start,
       end: start + sizes.size(index).height,
     }

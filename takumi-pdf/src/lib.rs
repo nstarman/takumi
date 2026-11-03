@@ -226,7 +226,7 @@ pub fn measure(options: MeasureOptions<'_>) -> Result<MeasuredSize, PdfError> {
       &options.node,
       999,
       999,
-      band_viewport(page.with_page_rules(&inputs.stylesheet).get(0)),
+      band_viewport(page.with_page_rules(&inputs.stylesheet).first()),
     )?,
     (None, Some(viewport)) => {
       inputs.prepare(options.node, viewport.with_media_target(MediaTarget::Print))?
@@ -252,7 +252,7 @@ pub fn needs(options: MeasureOptions<'_>) -> Result<RenderNeeds, PdfError> {
     lang: options.lang,
   };
   let viewport = match (options.page, options.viewport) {
-    (Some(page), _) => band_viewport(page.with_page_rules(&inputs.stylesheet).get(0)),
+    (Some(page), _) => band_viewport(page.with_page_rules(&inputs.stylesheet).first()),
     (None, Some(viewport)) => viewport.with_media_target(MediaTarget::Print),
     (None, None) => return Err(PdfError::MissingViewport),
   };

@@ -16,7 +16,10 @@ use selectors::parser::{
 #[cfg(feature = "font-face")]
 use crate::style::font_face_rule::FontFaceRule;
 pub use crate::style::media_query::MediaQueryList;
-use crate::style::page_rule::{PageDescriptors, PageKind, PageRule, PageSelector};
+use crate::style::{
+  PageName,
+  page_rule::{PageDescriptors, PageKind, PageRule, PageSelector},
+};
 use crate::viewport::Viewport;
 use crate::{
   Xxh3HashSet,
@@ -1513,9 +1516,27 @@ impl StyleSheet {
     &self.font_faces
   }
 
-  /// The `@page` descriptors that win for a `kind` page, with `@media` read at `viewport`.
-  pub fn page_descriptors(&self, viewport: Viewport, kind: PageKind) -> PageDescriptors {
-    PageRule::cascade(&self.page_rules, self.layer_count, viewport, kind)
+  /// The `@page` descriptors that win for a `kind` page named `name`, with `@media` read at
+  /// `viewport`.
+  pub fn page_descriptors(
+    &self,
+    viewport: Viewport,
+    kind: PageKind,
+    name: &PageName,
+  ) -> PageDescriptors {
+    PageRule::cascade(&self.page_rules, self.layer_count, viewport, kind, name)
+  }
+
+  /// The page names the `@page` rules select, each once, in the order they first appear.
+  pub fn page_names(&self) -> Vec<PageName> {
+    let mut names: Vec<PageName> = Vec::new();
+
+    for name in self.page_rules.iter().map(|rule| rule.selector.name()) {
+      if name.is_named() && !names.contains(name) {
+        names.push(name.clone());
+      }
+    }
+    names
   }
 
   /// Extends the stylesheet with keyframes.

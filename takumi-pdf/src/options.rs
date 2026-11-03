@@ -14,10 +14,7 @@ use takumi_core::{
   geometry::{Rect, Size},
   layout::node::Node,
   resources::{font::FontError, image::ImageSource},
-  style::{
-    Color, FontFamily, Lang, Length, SizingContext, StyleSheet,
-    page_rule::{PageKind, PageSize},
-  },
+  style::{Color, FontFamily, Lang, Length, SizingContext, StyleSheet, page_rule::PageSize},
   units::{ONE_IN_PX, ONE_MM_IN_PX, ONE_PT_IN_PX},
   viewport::{MediaTarget, Viewport},
 };
@@ -1004,11 +1001,12 @@ impl PageOptions {
     }
   }
 
-  /// Each page with the `@page` rules of `stylesheet` that match it laid over it, as Blink's
-  /// `StyleForPage` styles a page, CSS winning as Chromium's `preferCSSPageSize` lets it.
+  /// Each kind of page of each name with the `@page` rules of `stylesheet` that match it laid
+  /// over it, as Blink's `StyleForPage` styles a page, CSS winning as Chromium's
+  /// `preferCSSPageSize` lets it.
   pub(crate) fn with_page_rules(self, stylesheet: &StyleSheet) -> PerPage<Self> {
-    let page = |kind| {
-      let descriptors = stylesheet.page_descriptors(self.viewport(), kind);
+    PerPage::of_names(stylesheet.page_names(), |kind, name| {
+      let descriptors = stylesheet.page_descriptors(self.viewport(), kind, name);
       let sized = descriptors.size.map_or(self, |size| self.sized(size));
       let page = Self {
         margin: sized.margin.overlaid(descriptors.margin, &sized),
@@ -1017,13 +1015,7 @@ impl PageOptions {
 
       // Blink's `LayoutPageContainer` ignores the author's page style when it leaves no page area.
       if page.has_area() { page } else { self }
-    };
-
-    PerPage::new(
-      page(PageKind::First),
-      page(PageKind::Left),
-      page(PageKind::Right),
-    )
+    })
   }
 
   /// Whether the margins leave at least a pixel of page area on each axis, before any band.
