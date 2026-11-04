@@ -1,3 +1,21 @@
+## takumi-core@0.36.0
+
+### Load fonts from `@font-face` rules
+
+With the `font-face` feature, on by default in `takumi`, `@font-face` rules add fonts to a render. `needs` reports the files the text uses in `RenderNeeds::font_files`. Pass each to `Fonts::load_font_file`, or to `Fonts::fail_font_file` to fall back to the next `src`.
+
+### `@font-face` applies `size-adjust`, metric overrides, `font-feature-settings`, and `local()`
+
+### An inline `<svg>` draws whole at a `devicePixelRatio` above one
+
+An inline `<svg>` with a `viewBox` used to scale its shapes by the device pixel ratio twice, so at `devicePixelRatio: 2` only the top-left quarter showed. Its user units are now CSS pixels at any ratio, as Chromium draws them.
+
+### A font file registered at two weights keeps a face for each
+
+Registering one file under the same family with another `weight`, `style`, width or `unicodeRange` used to reuse the first face, so `font-weight: 700` drew a synthetic bold of the face declared at 400. Each registration with its own descriptors now adds its own face, sharing the parsed font.
+
+Registering a face again with the same descriptors moves it after the faces registered since, so the latest registration takes precedence as a later `@font-face` rule does.
+
 ## takumi-core@0.35.0
 
 ### Number content with CSS counters

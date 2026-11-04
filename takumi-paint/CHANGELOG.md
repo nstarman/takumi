@@ -1,3 +1,17 @@
+## takumi-paint@0.6.0
+
+### `PaintTree.free()` releases a tree's font files and glyph outlines
+
+A paint tree keeps its font files and glyph outlines in WebAssembly memory until garbage collection releases them, which can take a while after many paints. `tree.free()`, or a `using` declaration, releases them right away. Calling it again does nothing, and the painter and other trees stay usable. Reading the files of a freed tree throws `The paint tree was freed`.
+
+### `prepare` downloads the fonts `@font-face` rules load
+
+An `@font-face` rule in `css` or a `<style>` element now loads its font in `prepare`, `render`, and `ImageResponse`. A `src` that fails to download falls back to the next one.
+
+### A `using` block frees a renderer
+
+`Renderer`, `PdfRenderer` and `Painter` implement `Symbol.dispose`, so `using renderer = new Renderer()` frees the renderer's WebAssembly memory when the block ends, as calling `free()` does.
+
 ## takumi-paint@0.5.0
 
 ### `PdfRenderer` and `Painter` prepare a document too

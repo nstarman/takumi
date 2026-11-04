@@ -1,3 +1,17 @@
+## @takumi-rs/wasm@2.20.0
+
+### `prepare` downloads the fonts `@font-face` rules load
+
+An `@font-face` rule in `css` or a `<style>` element now loads its font in `prepare`, `render`, and `ImageResponse`. A `src` that fails to download falls back to the next one.
+
+### `registerFont` registers one buffer again under another name, weight, style or `unicodeRange`
+
+Passing the same `data` buffer to `registerFont` a second time with other descriptors used to return the first registration, so the new family or weight never existed. Each set of descriptors now registers its own face, as `@font-face` rules sharing one `src` do. A lazy font's key includes its `unicodeRange` too.
+
+### A `using` block frees a renderer
+
+`Renderer`, `PdfRenderer` and `Painter` implement `Symbol.dispose`, so `using renderer = new Renderer()` frees the renderer's WebAssembly memory when the block ends, as calling `free()` does.
+
 ## @takumi-rs/wasm@2.19.0
 
 ### Render on Nitro's `bun` preset instead of failing

@@ -1,3 +1,25 @@
+## takumi-pdf@0.20.0
+
+### `prepare` downloads the fonts `@font-face` rules load
+
+An `@font-face` rule in `css` or a `<style>` element now loads its font in `prepare`, `render`, and `ImageResponse`. A `src` that fails to download falls back to the next one.
+
+### A `using` block frees a renderer
+
+`Renderer`, `PdfRenderer` and `Painter` implement `Symbol.dispose`, so `using renderer = new Renderer()` frees the renderer's WebAssembly memory when the block ends, as calling `free()` does.
+
+### PDF renders decode a repeated `data:` URI image once
+
+A PDF that repeats a `data:` URI image, such as a table with the same signature in every row, used to decode and parse the image each time layout looked at it, so long documents rendered slowly. `PdfOptions` and `MeasureOptions` in the `takumi-pdf` crate take a `resource_cache` as the raster renderer's options do, and a render without one keeps its own. `PdfRenderer` passes its cache, so its renders share decoded images.
+
+### The `takumi-pdf` crate is on crates.io
+
+Rust programs can depend on `takumi-pdf` to write PDFs with selectable text, as the `takumi-pdf` npm package does. Its `render`, `measure`, and `needs` take the node tree, fonts, and stylesheet types from `takumi-core`.
+
+### An `href` on a table row or row group renders
+
+An `href` on a `tr`, `thead`, `tbody`, or `tfoot` used to fail the whole render with `invalid tag tree: annotation identifier ... doesn't appear in the tag tree`. The link now covers the row or group as it does on other elements, and its `Link` element sits in the last cell the link spans.
+
 ## takumi-pdf@0.19.0
 
 ### `PdfRenderer` and `Painter` prepare a document too
